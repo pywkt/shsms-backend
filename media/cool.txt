@@ -1,0 +1,9 @@
+September 15, 2021
+This was just a file for testing the save media functionality, I was going to delete it while cleaning up, but it seems like you're interested in reading what it has to say, so on that note,
+Thanks! 🎉
+
+I hope this app provides some of what you were looking for, and if you have any suggestions/bugs/whatever, please get in touch. The easiest way (assuming you have a Github account) would
+probably be to submit a ticket in the Issues tab (or something like that). I've got a to-do list i'll keep in the main Readme file and try to keep that updated, but since I've developed
+and tested all by myself, there's probably a lot of cases I haven't accounted for. Also, if you're looking this far in the app, you've probably realized that there aren't any tests.
+Like, none. This is not good practice, I know. Seriously, I know. Honestly, I didn't expect to take this as far as I have. My original idea was just to make a simple black/white sms-in/sms-out
+type of app, but I have this thing where I get started on something and kind of obsess over it and well, here we are...
