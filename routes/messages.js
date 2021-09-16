@@ -72,7 +72,7 @@ messagesRouter.post('/', (req, res) => {
     const newMessageData = new MessageData({
         _id: new mongoose.Types.ObjectId(),
         to: isFromTwilio ? process.env.TWILIO_PHONE_NUMBER : req.body.phoneNumber,
-        from: isFromTwilio ? req.body.phoneNumber : process.env.TWILIO_NUMBER,
+        from: isFromTwilio ? req.body.phoneNumber : process.env.TWILIO_PHONE_NUMBER,
         date: req.body.date,
         body: req.body.message,
         media: req.body.attachedMedia
