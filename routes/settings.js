@@ -9,10 +9,9 @@ const Setting = require('../db/Schemas/settings');
 const Image = require('../db/Schemas/media');
 
 settingsRouter.get('/', (req, res) => {
-    console.log('settings:', req.headers)
-    // if (req.headers.enc !== process.env.REQ_TOKEN) {
-    //     return false
-    // }
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
 
     Setting.find({}, (err, arr) => {
         if (arr.length === 0) {
