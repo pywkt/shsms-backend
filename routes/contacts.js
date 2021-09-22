@@ -5,6 +5,7 @@ const contactsRouter = express.Router();
 const Contact = require('../db/Schemas/contacts');
 
 contactsRouter.get('/', (req, res) => {
+    console.log('contacts:', req.headers)
     if (req.headers.enc !== process.env.REQ_TOKEN) {
         return false
     }
