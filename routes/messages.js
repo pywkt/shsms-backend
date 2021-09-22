@@ -22,6 +22,10 @@ const Contact = require('../db/Schemas/contacts');
 
 // Latest working
 messagesRouter.get('/:id', (req, res) => {
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
+
     Contact.findOne({ phoneNumber: req.params.id }).populate(
         { path: 'messages', model: 'Message' }).exec((err, contact) => {
             console.log('contact:', contact)
@@ -31,7 +35,9 @@ messagesRouter.get('/:id', (req, res) => {
 
 // Can be used to show all media as a gallery
 messagesRouter.get('/media', (req, res) => {
-    console.log(req.params.id)
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
 
     const dir = `${process.cwd()}/media`
     fs.readdir(dir, (err, files) => {
@@ -49,6 +55,10 @@ messagesRouter.get('/media', (req, res) => {
 })
 
 messagesRouter.post('/', (req, res) => {
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
+
     const isFromTwilio = Boolean(req.headers['x-custom-header'] === 'Twilio');
 
     if (!isFromTwilio) {

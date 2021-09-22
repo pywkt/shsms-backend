@@ -9,6 +9,10 @@ const Setting = require('../db/Schemas/settings');
 const Image = require('../db/Schemas/media');
 
 settingsRouter.get('/', (req, res) => {
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
+
     Setting.find({}, (err, arr) => {
         if (arr.length === 0) {
             Setting.create({ theme: 'botanical', showImageLink: false })
@@ -19,7 +23,9 @@ settingsRouter.get('/', (req, res) => {
 })
 
 settingsRouter.post('/', (req, res) => {
-    console.log('SETTINGS.REQ:', req.body)
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
 
     const newSettings = new Setting({
         _id: new mongoose.Types.ObjectId(),
@@ -38,7 +44,10 @@ settingsRouter.post('/', (req, res) => {
 })
 
 settingsRouter.post('/updateAlias/:id', (req, res) => {
-    console.log('req.body')
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
+
     Contact.findOneAndUpdate({ phoneNumber: req.body.phoneNumber }, { alias: req.body.newAlias }, { new: true }, (err, success) => {
         if (err) throw err;
 
@@ -47,6 +56,10 @@ settingsRouter.post('/updateAlias/:id', (req, res) => {
 })
 
 settingsRouter.post('/dropTables', (req, res) => {
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
+    
     if (req.body.confirm === 'burnEverything') {
         Message.deleteMany({}, (err) => {
             if (err) throw err

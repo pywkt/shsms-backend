@@ -8,6 +8,10 @@ const FileType = require('file-type')
 const Image = require('../db/Schemas/media');
 
 mediaRouter.get('/:id', (req, res) => {
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
+
     fs.readFile(`${process.cwd()}/media/${req.params.id}`, (err, data) => {
         if (err) res.status(500).send(err);
 
@@ -16,6 +20,10 @@ mediaRouter.get('/:id', (req, res) => {
 })
 
 mediaRouter.post('/upload', (req, res) => {
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
+    
     const mime = req.body.photo.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
     const split = req.body.photo.split(',');
     const base64string = split[1];
