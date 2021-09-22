@@ -9,6 +9,7 @@ const Setting = require('../db/Schemas/settings');
 const Image = require('../db/Schemas/media');
 
 settingsRouter.get('/', (req, res) => {
+    console.log('req.headers', req.headers)
     if (req.headers.enc !== process.env.REQ_TOKEN) {
         return false
     }
@@ -59,7 +60,7 @@ settingsRouter.post('/dropTables', (req, res) => {
     if (req.headers.enc !== process.env.REQ_TOKEN) {
         return false
     }
-    
+
     if (req.body.confirm === 'burnEverything') {
         Message.deleteMany({}, (err) => {
             if (err) throw err
