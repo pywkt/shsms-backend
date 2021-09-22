@@ -23,7 +23,7 @@ mediaRouter.post('/upload', (req, res) => {
     if (req.headers.enc !== process.env.REQ_TOKEN) {
         return false
     }
-    
+
     const mime = req.body.photo.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
     const split = req.body.photo.split(',');
     const base64string = split[1];
@@ -40,7 +40,6 @@ mediaRouter.post('/upload', (req, res) => {
 
     final_img.save((err, result) => {
         if (err) {
-            console.log(err);
             throw err
         } else {
             console.log("Saved To database");

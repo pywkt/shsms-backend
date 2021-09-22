@@ -12,15 +12,6 @@ const Message = require('../db/Schemas/messages');
 const MessageData = require('../db/Schemas/messageData');
 const Contact = require('../db/Schemas/contacts');
 
-// Original
-// messagesRouter.get('/:id', (req, res) => {
-//     Contact.findOne({ phoneNumber: req.params.id }).populate({ path: 'messages' }).exec((err, contact) => {
-//         console.log(contact)
-//         res.send({ alias: contact.alias, messages: contact.messages.data })
-//     })
-// })
-
-// Latest working
 messagesRouter.get('/:id', (req, res) => {
     if (req.headers.enc !== process.env.REQ_TOKEN) {
         return false
@@ -28,12 +19,11 @@ messagesRouter.get('/:id', (req, res) => {
 
     Contact.findOne({ phoneNumber: req.params.id }).populate(
         { path: 'messages', model: 'Message' }).exec((err, contact) => {
-            console.log('contact:', contact)
             res.send({ alias: contact.alias, messages: contact.messages.data })
         })
 })
 
-// Can be used to show all media as a gallery
+// Can be used to show all media as a gallery at a later date
 messagesRouter.get('/media', (req, res) => {
     if (req.headers.enc !== process.env.REQ_TOKEN) {
         return false
@@ -71,11 +61,10 @@ messagesRouter.post('/', (req, res) => {
                     mediaUrl: [req.body?.attachedMedia?.[0]] || null
                 })
                 .catch(err => {
-                    console.log(err);
                     res.send(JSON.stringify({ success: false }));
                 });
         } catch (err) {
-            console.error(err)
+            throw err
         }
     }
 
@@ -104,12 +93,10 @@ messagesRouter.post('/', (req, res) => {
 
     Contact.find({ phoneNumber: req.body.phoneNumber }, (err, arr) => {
         if (arr.length !== 0) {
-            console.log('REQ.BODY:', req.body)
-            console.log('EVENT:', req.body.event)
             Message.findOneAndUpdate({ contact: req.body.phoneNumber },
                 { $push: { data: newMessageData } }, { new: true }, (err, success) => {
                     if (err) {
-                        console.log(err)
+                        throw err
                     } else {
                         res.send(success)
                         io.emit('FromApi', success)
@@ -118,9 +105,8 @@ messagesRouter.post('/', (req, res) => {
             Contact.findOneAndUpdate({ phoneNumber: req.body.phoneNumber },
                 { lastMessageRecieved: newMessageData.date }, { new: true }, (err, success) => {
                     if (err) {
-                        console.log(err)
+                        throw err
                     } else {
-                        console.log('success:', success)
                         Contact.find({}, (err, arr) => io.emit('updateContacts', arr))
                     }
                 })

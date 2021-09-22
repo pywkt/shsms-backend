@@ -33,14 +33,16 @@ settingsRouter.post('/', (req, res) => {
         showImageLink: req.body.showImageLink
     })
 
-    Setting.findByIdAndUpdate({ _id: req.body._id }, { theme: newSettings.theme, showImageLink: req.body.showImageLink }, { new: true }, (err, success) => {
-        if (err) {
-            console.log(err)
-        } else {
-            console.log('Settings updated:', success)
-            res.status(200).json(success)
-        }
-    })
+    Setting.findByIdAndUpdate({ _id: req.body._id },
+        { theme: newSettings.theme, showImageLink: req.body.showImageLink },
+        { new: true },
+        (err, success) => {
+            if (err) {
+                throw err
+            } else {
+                res.status(200).json(success)
+            }
+        })
 })
 
 settingsRouter.post('/updateAlias/:id', (req, res) => {
