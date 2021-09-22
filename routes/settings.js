@@ -10,6 +10,7 @@ const Image = require('../db/Schemas/media');
 
 settingsRouter.get('/', (req, res) => {
     console.log('req.headers', req.headers)
+    console.log(`${process.env.DEV_SERVER}:${process.env.PORT}`)
     if (req.headers.enc !== process.env.REQ_TOKEN) {
         return false
     }
