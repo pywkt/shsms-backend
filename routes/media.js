@@ -8,10 +8,6 @@ const FileType = require('file-type')
 const Image = require('../db/Schemas/media');
 
 mediaRouter.get('/:id', (req, res) => {
-    if (req.headers.enc !== process.env.REQ_TOKEN) {
-        return false
-    }
-
     fs.readFile(`${process.cwd()}/media/${req.params.id}`, (err, data) => {
         if (err) res.status(500).send(err);
 

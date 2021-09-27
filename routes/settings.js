@@ -15,7 +15,7 @@ settingsRouter.get('/', (req, res) => {
 
     Setting.find({}, (err, arr) => {
         if (arr.length === 0) {
-            Setting.create({ theme: 'botanical', showImageLink: false })
+            Setting.create({ theme: 'botanical', showImageLink: false, openLists: [] })
         }
 
         res.status(200).json(arr)
@@ -29,12 +29,13 @@ settingsRouter.post('/', (req, res) => {
 
     const newSettings = new Setting({
         _id: new mongoose.Types.ObjectId(),
-        theme: req.body.theme.newTheme,
-        showImageLink: req.body.showImageLink
+        theme: req.body.theme.newTheme || req.body.theme.slug,
+        showImageLink: req.body.showImageLink,
+        openLists: req.body.openLists
     })
 
     Setting.findByIdAndUpdate({ _id: req.body._id },
-        { theme: newSettings.theme, showImageLink: req.body.showImageLink },
+        { theme: newSettings.theme, showImageLink: req.body.showImageLink, openLists: req.body.openLists },
         { new: true },
         (err, success) => {
             if (err) {

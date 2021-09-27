@@ -52,7 +52,8 @@ mongoose.connect(uri, {
                     const defaultSettings = new Setting({
                         _id: new mongoose.Types.ObjectId(),
                         theme: 'botanical',
-                        showImageLink: false
+                        showImageLink: false,
+                        openLists: []
                     })
 
                     defaultSettings.save()

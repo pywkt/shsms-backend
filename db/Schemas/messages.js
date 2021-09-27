@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const messageSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     contact: String,
+    to: String,
     data: [{
         _id: mongoose.Schema.Types.ObjectId,
         to: {

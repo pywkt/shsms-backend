@@ -12,12 +12,25 @@ const Message = require('../db/Schemas/messages');
 const MessageData = require('../db/Schemas/messageData');
 const Contact = require('../db/Schemas/contacts');
 
-messagesRouter.get('/:id', (req, res) => {
+// Original for one number. Keeping this here for now...
+// messagesRouter.get('/:id', (req, res) => {
+//     if (req.headers.enc !== process.env.REQ_TOKEN) {
+//         return false
+//     }
+
+//     Contact.findOne({ phoneNumber: req.params.id }).populate(
+//         { path: 'messages', model: 'Message' }).exec((err, contact) => {
+//             res.send({ alias: contact.alias, messages: contact.messages.data })
+//         })
+// })
+
+// Set up for multiple numbers
+messagesRouter.get('/:toPhoneNumber/:fromPhoneNumber', (req, res) => {
     if (req.headers.enc !== process.env.REQ_TOKEN) {
         return false
     }
 
-    Contact.findOne({ phoneNumber: req.params.id }).populate(
+    Contact.findOne({ phoneNumber: req.params.fromPhoneNumber, toPhoneNumber: req.params.toPhoneNumber }).populate(
         { path: 'messages', model: 'Message' }).exec((err, contact) => {
             res.send({ alias: contact.alias, messages: contact.messages.data })
         })
@@ -55,7 +68,7 @@ messagesRouter.post('/', (req, res) => {
         try {
             client.messages
                 .create({
-                    from: process.env.TWILIO_PHONE_NUMBER,
+                    from: req.body.toPhoneNumber,
                     to: req.body.phoneNumber,
                     body: req.body.message || '',
                     mediaUrl: [req.body?.attachedMedia?.[0]] || null
@@ -70,8 +83,8 @@ messagesRouter.post('/', (req, res) => {
 
     const newMessageData = new MessageData({
         _id: new mongoose.Types.ObjectId(),
-        to: isFromTwilio ? process.env.TWILIO_PHONE_NUMBER : req.body.phoneNumber,
-        from: isFromTwilio ? req.body.phoneNumber : process.env.TWILIO_PHONE_NUMBER,
+        to: isFromTwilio ? req.body.toPhoneNumber : req.body.phoneNumber,
+        from: isFromTwilio ? req.body.phoneNumber : req.body.toPhoneNumber,
         date: req.body.date,
         body: req.body.message,
         media: req.body.attachedMedia
@@ -80,6 +93,7 @@ messagesRouter.post('/', (req, res) => {
     const newMessage = new Message({
         _id: new mongoose.Types.ObjectId(),
         contact: req.body.phoneNumber,
+        to: req.body.toPhoneNumber,
         data: newMessageData
     })
 
@@ -88,12 +102,14 @@ messagesRouter.post('/', (req, res) => {
         phoneNumber: req.body.phoneNumber,
         lastMessageRecieved: req.body.date,
         messages: newMessage._id,
-        alias: req.body.alias || ''
+        alias: req.body.alias || '',
+        toPhoneNumber: req.body.toPhoneNumber
     })
 
-    Contact.find({ phoneNumber: req.body.phoneNumber }, (err, arr) => {
+    Contact.find({ phoneNumber: req.body.phoneNumber, toPhoneNumber: req.body.toPhoneNumber }, (err, arr) => {
+        console.log('req.body.event.to:', req.body.toPhoneNumber)
         if (arr.length !== 0) {
-            Message.findOneAndUpdate({ contact: req.body.phoneNumber },
+            Message.findOneAndUpdate({ contact: req.body.phoneNumber, to: req.body.toPhoneNumber },
                 { $push: { data: newMessageData } }, { new: true }, (err, success) => {
                     if (err) {
                         throw err
@@ -102,7 +118,7 @@ messagesRouter.post('/', (req, res) => {
                         io.emit('FromApi', success)
                     }
                 })
-            Contact.findOneAndUpdate({ phoneNumber: req.body.phoneNumber },
+            Contact.findOneAndUpdate({ phoneNumber: req.body.phoneNumber, toPhoneNumber: req.body.toPhoneNumber },
                 { lastMessageRecieved: newMessageData.date }, { new: true }, (err, success) => {
                     if (err) {
                         throw err

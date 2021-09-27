@@ -14,12 +14,13 @@ const contactsSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    messages: 
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Message'
-        }
-    
+    messages:
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message'
+    },
+    toPhoneNumber: String
+
 })
 
 const Contact = mongoose.model('Contact', contactsSchema)

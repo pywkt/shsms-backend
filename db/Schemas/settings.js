@@ -8,7 +8,8 @@ const settingsSchema = new mongoose.Schema({
     showImageLink: {
         type: Boolean,
         default: false
-    }
+    },
+    openLists: Array
 })
 
 const Settings = mongoose.model('Settings', settingsSchema)

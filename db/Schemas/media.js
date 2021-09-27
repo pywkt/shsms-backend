@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const imgSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    img: { 
+    img: {
         data: Buffer,
-        contentType: String 
+        contentType: String
     }
 });
 
