@@ -114,7 +114,8 @@ messagesRouter.post('/', (req, res) => {
                     if (err) {
                         throw err
                     } else {
-                        res.send(success)
+                        res.set('Content-Type', 'application/json')
+                        res.json({ success })
                         io.emit('FromApi', success)
                     }
                 })
