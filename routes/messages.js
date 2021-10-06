@@ -107,7 +107,6 @@ messagesRouter.post('/', (req, res) => {
     })
 
     Contact.find({ phoneNumber: req.body.phoneNumber, toPhoneNumber: req.body.toPhoneNumber }, (err, arr) => {
-        console.log('req.body.event.to:', req.body.toPhoneNumber)
         if (arr.length !== 0) {
             Message.findOneAndUpdate({ contact: req.body.phoneNumber, to: req.body.toPhoneNumber },
                 { $push: { data: newMessageData } }, { new: true }, (err, success) => {
