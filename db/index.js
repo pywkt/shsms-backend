@@ -53,7 +53,8 @@ mongoose.connect(uri, {
                         _id: new mongoose.Types.ObjectId(),
                         theme: 'botanical',
                         showImageLink: false,
-                        openLists: []
+                        openLists: [],
+                        connectedNumbersOrder: []
                     })
 
                     defaultSettings.save()

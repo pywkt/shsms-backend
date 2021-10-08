@@ -14,6 +14,14 @@ settingsRouter.get('/', (req, res) => {
     }
 
     Setting.find({}, (err, arr) => {
+        // Uncomment the following lines and restart the server if 
+        // something goes wrong with the settings collection.
+
+        // Setting.deleteMany({}, (err) => {
+        //     if (err) throw err
+        //     console.log('*** DELETED SETTINGS ***')
+        // })
+
         if (arr.length === 0) {
             Setting.create({ theme: 'botanical', showImageLink: false, openLists: [] })
         }
@@ -31,11 +39,17 @@ settingsRouter.post('/', (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         theme: req.body.theme.newTheme || req.body.theme.slug,
         showImageLink: req.body.showImageLink,
-        openLists: req.body.openLists
+        openLists: req.body.openLists,
+        connectedNumbersOrder: req.body.connectedNumbersOrder
     })
 
     Setting.findByIdAndUpdate({ _id: req.body._id },
-        { theme: newSettings.theme, showImageLink: req.body.showImageLink, openLists: req.body.openLists },
+        {
+            theme: newSettings.theme,
+            showImageLink: newSettings.showImageLink,
+            openLists: newSettings.openLists,
+            connectedNumbersOrder: newSettings.connectedNumbersOrder
+        },
         { new: true },
         (err, success) => {
             if (err) {
