@@ -6,7 +6,6 @@ const Message = require('./Schemas/messages');
 const Setting = require('./Schemas/settings');
 const Image = require('./Schemas/media');
 
-// const uri = "mongodb://127.0.0.1:27017"
 const uri = process.env.MONGO_DB_URI;
 
 mongoose.connect(uri, {
@@ -54,7 +53,8 @@ mongoose.connect(uri, {
                         theme: 'botanical',
                         showImageLink: false,
                         openLists: [],
-                        connectedNumbersOrder: []
+                        connectedNumbersOrder: [],
+                        connectedNumbers: []
                     })
 
                     defaultSettings.save()

@@ -10,7 +10,8 @@ const settingsSchema = new mongoose.Schema({
         default: false
     },
     openLists: Array,
-    connectedNumbersOrder: Array
+    connectedNumbersOrder: Array,
+    connectedNumbers: Array
 })
 
 const Settings = mongoose.model('Settings', settingsSchema)
