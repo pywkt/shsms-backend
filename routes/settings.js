@@ -13,9 +13,9 @@ settingsRouter.get('/', (req, res) => {
         return false
     }
 
-    Setting.find({}, (err, arr) => {
+    Setting.findOne({}, (err, arr) => {
         if (arr.length === 0) {
-            Setting.create({ theme: 'botanical', showImageLink: false, openLists: [] })
+            Setting.create({ theme: 'botanical', showImageLink: false, openLists: [], connectedNumbersOrder: [], connectedNumbers: [] })
         }
 
         res.status(200).json(arr)
@@ -29,13 +29,19 @@ settingsRouter.post('/', (req, res) => {
 
     const newSettings = new Setting({
         _id: new mongoose.Types.ObjectId(),
-        theme: req.body.theme.newTheme || req.body.theme.slug,
-        showImageLink: req.body.showImageLink,
-        openLists: req.body.openLists
+        theme: req.body.theme.newTheme || req.body.theme.slug || 'dots',
+        showImageLink: req.body.showImageLink || false,
+        openLists: req.body.openLists || [],
+        connectedNumbersOrder: req.body.connectedNumbersOrder || []
     })
 
     Setting.findByIdAndUpdate({ _id: req.body._id },
-        { theme: newSettings.theme, showImageLink: req.body.showImageLink, openLists: req.body.openLists },
+        {
+            theme: newSettings.theme,
+            showImageLink: newSettings.showImageLink,
+            openLists: newSettings.openLists,
+            connectedNumbersOrder: newSettings.connectedNumbersOrder
+        },
         { new: true },
         (err, success) => {
             if (err) {
@@ -46,12 +52,22 @@ settingsRouter.post('/', (req, res) => {
         })
 })
 
-settingsRouter.post('/updateAlias/:id', (req, res) => {
+settingsRouter.post('/openCloseList', (req, res) => {
     if (req.headers.enc !== process.env.REQ_TOKEN) {
         return false
     }
 
-    Contact.findOneAndUpdate({ phoneNumber: req.body.phoneNumber }, { alias: req.body.newAlias }, { new: true }, (err, success) => {
+    Setting.findOneAndUpdate({}, { openLists: req.body }, { new: true }, (err, settings) => {
+        res.status(200).json(settings)
+    })
+})
+
+settingsRouter.post('/updateConnectedAlias', (req, res) => {
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
+
+    Setting.findOneAndUpdate({}, { $set: { connectedNumbers: req.body } }, { new: true }, (err, success) => {
         if (err) throw err;
 
         res.status(200).json(success)
@@ -78,10 +94,15 @@ settingsRouter.post('/dropTables', (req, res) => {
                 console.log('** DELETED MEDIA **')
             })
         }).then(() => {
+            Setting.findOneAndUpdate({}, { openLists: [], connectedNumbersOrder: [], connectedNumbers: [] }, { new: true }, (err) => {
+                if (err) throw err
+                console.log('** RESET SETTINGS **')
+            })
+        }).then(() => {
             res.send('ALL YOUR BASE ARE BELONG TO US')
         })
     } else {
-        console.log('NO DROP THIS TIME')
+        console.log('NOT TODAY')
         return
     }
 })

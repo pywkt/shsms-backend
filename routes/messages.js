@@ -11,18 +11,7 @@ const client = require('twilio')(
 const Message = require('../db/Schemas/messages');
 const MessageData = require('../db/Schemas/messageData');
 const Contact = require('../db/Schemas/contacts');
-
-// Original for one number. Keeping this here for now...
-// messagesRouter.get('/:id', (req, res) => {
-//     if (req.headers.enc !== process.env.REQ_TOKEN) {
-//         return false
-//     }
-
-//     Contact.findOne({ phoneNumber: req.params.id }).populate(
-//         { path: 'messages', model: 'Message' }).exec((err, contact) => {
-//             res.send({ alias: contact.alias, messages: contact.messages.data })
-//         })
-// })
+const Settings = require('../db/Schemas/settings');
 
 // Set up for multiple numbers
 messagesRouter.get('/:toPhoneNumber/:fromPhoneNumber', (req, res) => {
@@ -103,11 +92,10 @@ messagesRouter.post('/', (req, res) => {
         lastMessageRecieved: req.body.date,
         messages: newMessage._id,
         alias: req.body.alias || '',
-        toPhoneNumber: req.body.toPhoneNumber
+        toPhoneNumber: req.body.toPhoneNumber,
     })
 
     Contact.find({ phoneNumber: req.body.phoneNumber, toPhoneNumber: req.body.toPhoneNumber }, (err, arr) => {
-        console.log('req.body.event.to:', req.body.toPhoneNumber)
         if (arr.length !== 0) {
             Message.findOneAndUpdate({ contact: req.body.phoneNumber, to: req.body.toPhoneNumber },
                 { $push: { data: newMessageData } }, { new: true }, (err, success) => {
@@ -119,6 +107,8 @@ messagesRouter.post('/', (req, res) => {
                         io.emit('FromApi', success)
                     }
                 })
+
+
             Contact.findOneAndUpdate({ phoneNumber: req.body.phoneNumber, toPhoneNumber: req.body.toPhoneNumber },
                 { lastMessageRecieved: newMessageData.date }, { new: true }, (err, success) => {
                     if (err) {
@@ -127,6 +117,7 @@ messagesRouter.post('/', (req, res) => {
                         Contact.find({}, (err, arr) => io.emit('updateContacts', arr))
                     }
                 })
+
         } else {
             newContact.save((err) => {
                 if (err) throw err
@@ -142,6 +133,34 @@ messagesRouter.post('/', (req, res) => {
 
                         res.send(contacts)
                         io.emit('updateContacts', contacts)
+                    })
+
+                    Settings.findOne({}, (err, connected) => {
+                        if (err) {
+                            console.log('connected err:', err)
+                            throw err
+                        }
+
+                        const numberToUpdate = connected?.connectedNumbers?.find(i => i.phoneNumber === req.body.toPhoneNumber && i);
+
+                        if (numberToUpdate?.phoneNumber === req.body.toPhoneNumber) {
+                            console.log('number already connected')
+                        } else {
+                            Settings.findOneAndUpdate({},
+                                {
+                                    $addToSet: {
+                                        connectedNumbersOrder: req.body.toPhoneNumber,
+                                        connectedNumbers: {
+                                            phoneNumber: req.body.toPhoneNumber
+                                        }
+                                    }
+                                }, { new: true }, (err, res) => {
+                                    if (err) {
+                                        console.log('err')
+                                        throw err
+                                    }
+                                })
+                        }
                     })
                 })
             })

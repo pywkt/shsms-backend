@@ -20,7 +20,6 @@ const contactsSchema = new mongoose.Schema({
         ref: 'Message'
     },
     toPhoneNumber: String
-
 })
 
 const Contact = mongoose.model('Contact', contactsSchema)
