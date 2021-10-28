@@ -13,6 +13,14 @@ settingsRouter.get('/', (req, res) => {
         return false
     }
 
+    // Uncomment the following lines and restart the server if 
+    // something goes wrong with the settings collection.
+
+    // Setting.deleteMany({}, (err) => {
+    //     if (err) throw err
+    //     console.log('*** DELETED SETTINGS ***')
+    // })
+
     Setting.findOne({}, (err, arr) => {
         if (arr.length === 0) {
             Setting.create({ theme: 'botanical', showImageLink: false, openLists: [], connectedNumbersOrder: [], connectedNumbers: [] })
