@@ -14,7 +14,8 @@ settingsRouter.get('/', (req, res) => {
     }
 
     // Uncomment the following lines and restart the server if 
-    // something goes wrong with the settings collection.
+    // something goes wrong with the settings collection and you
+    // need to wipe it all out.
 
     // Setting.deleteMany({}, (err) => {
     //     if (err) throw err
@@ -22,7 +23,7 @@ settingsRouter.get('/', (req, res) => {
     // })
 
     Setting.findOne({}, (err, arr) => {
-        if (arr.length === 0) {
+        if (!arr) {
             Setting.create({ theme: 'botanical', showImageLink: false, openLists: [], connectedNumbersOrder: [], connectedNumbers: [] })
         }
 
