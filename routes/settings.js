@@ -14,7 +14,8 @@ settingsRouter.get('/', (req, res) => {
     }
 
     // Uncomment the following lines and restart the server if 
-    // something goes wrong with the settings collection.
+    // something goes wrong with the settings collection and you
+    // need to wipe it all out.
 
     // Setting.deleteMany({}, (err) => {
     //     if (err) throw err
@@ -22,7 +23,7 @@ settingsRouter.get('/', (req, res) => {
     // })
 
     Setting.findOne({}, (err, arr) => {
-        if (arr.length === 0) {
+        if (!arr) {
             Setting.create({ theme: 'botanical', showImageLink: false, openLists: [], connectedNumbersOrder: [], connectedNumbers: [] })
         }
 
@@ -40,7 +41,8 @@ settingsRouter.post('/', (req, res) => {
         theme: req.body.theme.newTheme || req.body.theme.slug || 'dots',
         showImageLink: req.body.showImageLink || false,
         openLists: req.body.openLists || [],
-        connectedNumbersOrder: req.body.connectedNumbersOrder || []
+        connectedNumbersOrder: req.body.connectedNumbersOrder || [],
+        disableNotifications: req.body.disableNotifications || false
     })
 
     Setting.findByIdAndUpdate({ _id: req.body._id },
@@ -48,7 +50,8 @@ settingsRouter.post('/', (req, res) => {
             theme: newSettings.theme,
             showImageLink: newSettings.showImageLink,
             openLists: newSettings.openLists,
-            connectedNumbersOrder: newSettings.connectedNumbersOrder
+            connectedNumbersOrder: newSettings.connectedNumbersOrder,
+            disableNotifications: newSettings.disableNotifications
         },
         { new: true },
         (err, success) => {
@@ -67,6 +70,18 @@ settingsRouter.post('/openCloseList', (req, res) => {
 
     Setting.findOneAndUpdate({}, { openLists: req.body }, { new: true }, (err, settings) => {
         res.status(200).json(settings)
+    })
+})
+
+settingsRouter.post('/disableNotifications', (req, res) => {
+    if (req.headers.enc !== process.env.REQ_TOKEN) {
+        return false
+    }
+
+    console.log('req.body:', req.body)
+
+    Setting.findOneAndUpdate({}, { disableNotifications: req.body.disableNotifications }, { new: true }, (err, updatedSettings) => {
+        res.status(200).json(updatedSettings)
     })
 })
 

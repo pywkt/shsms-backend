@@ -11,7 +11,11 @@ const settingsSchema = new mongoose.Schema({
     },
     openLists: Array,
     connectedNumbersOrder: Array,
-    connectedNumbers: Array
+    connectedNumbers: Array,
+    disableNotifications: {
+        type: Boolean,
+        default: false
+    }
 })
 
 const Settings = mongoose.model('Settings', settingsSchema)

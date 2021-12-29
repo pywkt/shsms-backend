@@ -54,7 +54,8 @@ mongoose.connect(uri, {
                         showImageLink: false,
                         openLists: [],
                         connectedNumbersOrder: [],
-                        connectedNumbers: []
+                        connectedNumbers: [],
+                        disableNotifications: false
                     })
 
                     defaultSettings.save()
